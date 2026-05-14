@@ -1,0 +1,50 @@
+{
+  "skill_name": "cet-english-learner",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我精读这篇动漫新闻文章。目标级别 CET4 和 CET6 都要，标准型挖空策略。文件在 evals/files/lupin-article.txt",
+      "expected_output": "调用 init_learning_dir.py 脚本创建 {title-slug}-learning/ 输出目录，包含 source.txt（原始语料）和5个待填充的空文件。然后逐阶段写入：词汇表.csv（CSV格式四六级词汇表）、关键句式.md（段落概览+关键句式）、精读笔记.md（逐段拆解+翻译+文化注）、费曼练习.md（理解问题+参考答案）、墨墨卡片.txt（墨墨标准导入格式）。不生成 full_output.md。在对话中展示全部学习内容。",
+      "files": ["evals/files/lupin-article.txt"],
+      "assertions": [
+        {"id": "output_dir_created", "description": "输出目录已创建（名称包含 -learning 后缀）", "check_type": "file_exists_pattern", "pattern": "*-learning"},
+        {"id": "source_txt_exists", "description": "source.txt 存在且包含原始语料内容", "check_type": "file_content_check", "file_pattern": "source.txt", "expected_content": "Musician and composer"},
+        {"id": "vocab_csv_exists", "description": "词汇表.csv 文件存在且包含正确CSV表头", "check_type": "file_content_check", "file_pattern": "词汇表.csv", "expected_content": "段落,单词,级别,词性,释义,原文句"},
+        {"id": "key_sentences_md_exists", "description": "关键句式.md 存在且包含必要章节", "check_type": "file_content_check", "file_pattern": "关键句式.md", "expected_content": ["段落结构概览", "关键句式"]},
+        {"id": "close_reading_md_exists", "description": "精读笔记.md 存在且含逐句拆解、翻译、文化注", "check_type": "file_content_check", "file_pattern": "精读笔记.md", "expected_content": ["逐句拆解", "段落翻译", "文化"]},
+        {"id": "feynman_practice_md_exists", "description": "费曼练习.md 存在且含理解检测问题和参考答案", "check_type": "file_content_check", "file_pattern": "费曼练习.md", "expected_content": ["理解检测问题", "参考答案"]},
+        {"id": "memo_cards_txt_exists", "description": "墨墨卡片.txt 存在且含 ### 章节和 --- 分隔符", "check_type": "file_content_check", "file_pattern": "墨墨卡片.txt", "expected_content": ["###", "---"]},
+        {"id": "memo_format_correct", "description": "墨墨卡片含 [F##...] 挖空格式", "check_type": "file_content_regex", "file_pattern": "墨墨卡片.txt", "regex": "\\[F##[^\\]]+\\]"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "这是一段动漫对话字幕，帮我用来学英语。目标 CET4，实用短句优先。文件在 evals/files/subtitle-sample.txt",
+      "expected_output": "调用 init_learning_dir.py 脚本创建输出目录（如 restaurant-dialogue-learning/），包含 source.txt 和5个空文件。写入：词汇表.csv、关键句式.md、精读笔记.md（含口语表达分析和语气分析）、费曼练习.md、墨墨卡片.txt（含场景还原卡）。不生成 full_output.md。在对话中展示全部学习内容。",
+      "files": ["evals/files/subtitle-sample.txt"],
+      "assertions": [
+        {"id": "output_dir_created", "description": "输出目录已创建（名称包含 -learning 后缀）", "check_type": "file_exists_pattern", "pattern": "*-learning"},
+        {"id": "source_txt_exists", "description": "source.txt 存在且包含原始字幕内容", "check_type": "file_content_check", "file_pattern": "source.txt", "expected_content": "hey what are you doing"},
+        {"id": "all_5_files_exist", "description": "5个输出文件全部存在", "check_type": "all_files_exist", "expected_files": ["词汇表.csv", "关键句式.md", "精读笔记.md", "费曼练习.md", "墨墨卡片.txt"]},
+        {"id": "subtitle_oral_analysis", "description": "精读笔记含口语/语气分析", "check_type": "file_content_check", "file_pattern": "精读笔记.md", "expected_content": "口语"},
+        {"id": "scene_restore_cards", "description": "墨墨卡片含场景还原卡章节", "check_type": "file_content_check", "file_pattern": "墨墨卡片.txt", "expected_content": "场景还原"},
+        {"id": "memo_format_correct", "description": "墨墨卡片含 [F##...] 挖空格式", "check_type": "file_content_regex", "file_pattern": "墨墨卡片.txt", "regex": "\\[F##[^\\]]+\\]"}
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "帮我精读这篇魔法动漫 Top10 排名的文章。目标级别 CET4 和 CET6 都要，标准型挖空策略，费曼复述用完整深度（问题+复述+翻译还原）。文件在 evals/files/magic-anime-top10.txt",
+      "expected_output": "调用 init_learning_dir.py 脚本创建输出目录（如 magic-anime-top10-learning/），包含 source.txt 和5个空文件。写入：词汇表.csv（海量CET4+CET6词汇）、关键句式.md（段落概览+关键句式）、精读笔记.md（逐段拆解+翻译+文化注，涵盖10部动漫）、费曼练习.md（含翻译还原，因为配置了完整深度）、墨墨卡片.txt（墨墨标准格式）。不生成 full_output.md。在对话中展示全部学习内容。",
+      "files": ["evals/files/magic-anime-top10.txt"],
+      "assertions": [
+        {"id": "output_dir_created", "description": "输出目录已创建（名称包含 -learning 后缀）", "check_type": "file_exists_pattern", "pattern": "*-learning"},
+        {"id": "source_txt_exists", "description": "source.txt 存在且包含文章原始内容", "check_type": "file_content_check", "file_pattern": "source.txt", "expected_content": "Welcome back to"},
+        {"id": "all_6_files_exist", "description": "6个文件全部存在（source.txt + 5个内容文件）", "check_type": "all_files_exist", "expected_files": ["source.txt", "词汇表.csv", "关键句式.md", "精读笔记.md", "费曼练习.md", "墨墨卡片.txt"]},
+        {"id": "vocab_csv_has_cet6", "description": "词汇表.csv 包含 CET6 级别词汇", "check_type": "file_content_check", "file_pattern": "词汇表.csv", "expected_content": "CET6"},
+        {"id": "close_reading_md_has_culture", "description": "精读笔记.md 含逐句拆解和文化/背景注", "check_type": "file_content_check", "file_pattern": "精读笔记.md", "expected_content": ["逐句拆解", "文化"]},
+        {"id": "feynman_has_translation_restore", "description": "费曼练习.md 含翻译还原（完整深度配置）", "check_type": "file_content_check", "file_pattern": "费曼练习.md", "expected_content": "翻译还原"},
+        {"id": "memo_cards_format_ok", "description": "墨墨卡片.txt 含 ### 章节和 [F##...] 挖空格式", "check_type": "file_content_regex", "file_pattern": "墨墨卡片.txt", "regex": "\\[F##[^\\]]+\\]"}
+      ]
+    }
+  ]
+}
